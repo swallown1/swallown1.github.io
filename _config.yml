@@ -7,7 +7,7 @@
 
 # Site settings
 title: 志同学
-brief-intro: 一只不知道干点啥的烟酒僧
+brief-intro: 一个无所事事的烟酒僧
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://swallown1.github.io" # the base hostname & protocol for your site
 
@@ -18,12 +18,12 @@ twitter_username: #gaohaoyang126
 facebook_username: #gaohaoyang.water
 github_username:  swallown1
 email: 2327257266@QQ.com
-weibo_username: /
-zhihu_username: /
-linkedIn_username: /
+weibo_username: 3115521wh
+zhihu_username: hll643435675
+linkedIn_username: gaohaoyang
 dribbble_username:
 
-description_footer: 志_Vinsion_个人足印!
+description_footer: 来自小志同学！
 
 # comments
 # two ways to comment, only choose one, and use your own short name
@@ -35,7 +35,7 @@ disqus_shortname: #gaohaoyang
 # 百度统计 id，将统计代码替换为自己的百度统计id，即
 # hm.src = "//hm.baidu.com/hm.js?xxxxxxxxxxxx";
 # xxxxx字符串
-#baidu_tongji_id: 552aa8d99c04e57a157ba015b317ce20
+#baidu_tongji_id: 1cc1fc4b4b456bf7c99ce80aec5bf009
 #google_analytics_id: UA-72449510-4 # google 分析追踪id
 
 # Build settings

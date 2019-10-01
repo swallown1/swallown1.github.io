@@ -10,87 +10,37 @@ excerpt: 记录看过的一些paper
 
 * content
 {:toc}
-最近想看一些关于推荐系统的内容，打算从CRT模型整体的发展过程看一些经典的模型。本篇就是其中一篇，PNN模型，全称Product-based Neural Network。
+这篇主要讲的是一个关于CRT的一个深度学习模型 DeepFM。DeepFM算法主要包含两个方面，其中是FM矩阵分解，其次是MLP，将两者结合起来的模型。其中FM矩阵分解主要是将提取一阶和二阶的低阶特征进行提取。MLP主要是提取FM无法提取的高阶特征。
 
-## 1、原理和模型结构
-这篇文章提出的主要问题是，在embedding后到神经网络中得到的交叉特征表达的不够充分，因此提出了一种 product-based 的思想，通过乘法的运算来体现出特征交叉的网络结构。具体的结构如下图：
-<img src="https://upload-images.jianshu.io/upload_images/4155986-9867a7134749f48e.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp" />
+## 1、原理和背景
+这篇文章提出的主要问题是，FM虽然理论上可以进行高阶的特征提取，但是因为计算的复杂性的问题，现实中只进行二阶特征的提取。所以对于更高阶的特征组合就无法进行提取了，因此希望通过DNN网络可以对更高阶的特征进行提取。
 
-从上往下一次介绍模型的每个结构：
+##### DNN模型
 
-#### 输出层
-输出层主要是将上一层的结果拿来做了一个全连接，然后通过sigmoid函数，将结果映射在(0,1)上，得到需要的点击率。
-**$$y^{hat} = \sigma(W_3l_2+b_3)$$**
+在CRT问题中，由于存在大量的稀疏特征矩阵，因此通过全连接的DNN网络会产生很大的参数，同时很多参数由于都是稀疏的，因此导致反向传播时会出现梯度消失的情况。
+<img src='https://upload-images.jianshu.io/upload_images/4155986-f4363ca2be689dbb.png?imageMogr2/auto-orient/strip|imageView2/2/w/1164/format/webp'/>
+所以论文中对此的处理是和FFM中的思想类似，将不同的特征分成不同的field
+<img src="https://upload-images.jianshu.io/upload_images/4155986-5f476d2c5b616232.png?imageMogr2/auto-orient/strip|imageView2/2/w/1101/format/webp" />
 
-#### l2层
-l2层主要是将上一层的结果拿来做了一个全连接，然后通过relu函数，得到l2层的输出结果。
-**$$l_2 = relu(W_2l_1+b_2)$$**
+进行处理后，将得到的Dense Vector输入到DNN当中，但是学到的低阶和高阶的特征组合隐藏在MLP当中，但是如何将低阶的特征组合单独建模然后将其和高阶特征组合融合呢?
+<img src='https://upload-images.jianshu.io/upload_images/4155986-7e036f56982d323b.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp'/>
 
-#### l1层
-l1层和l2层类似，公式如下。
-**$$l_1= relu(l_z+l_p+b_1)$$**
-这里的$l_z$和$l_p$ 是什么呢？明显不是embedding层的结果啊。其实这就是PNN全文的核心，在embedding层和MLP中间加入的product layer.
+那么就是要将DNN和FM进行融合才能达到这个要求了
+<img src='https://upload-images.jianshu.io/upload_images/4155986-2b8d2e22017ad339.png?imageMogr2/auto-orient/strip|imageView2/2/w/1183/format/webp'/>
 
-#### Product layer
-Product layer 其核心思想就是想体现一种多个特征之间更多的是一种“且”的关系，而不是和的关系。例如，性别为男且喜欢游戏的人群，比起性别男和喜欢游戏的人群，前者的组合比后者更能体现特征交叉的意义。
-
-Product layer包含着2部分，其中的$l_z$和$l_p$，所表达的是线性和非线性关系。形式如下：
-<img src='https://upload-images.jianshu.io/upload_images/4155986-79596b0e03993e0d.png?imageMogr2/auto-orient/strip|imageView2/2/w/704/format/webp' />
-上面的运算方式指的是矩阵的点乘：
-<img src='https://upload-images.jianshu.io/upload_images/4155986-cc22b83064d309cf.png?imageMogr2/auto-orient/strip|imageView2/2/w/378/format/webp'>
-
-#### Embedding 层
-这里的Embedding层和DeepFM中的是类似的，对于不同field的特征转化成相同长度的向量，这里用f来表示.
-### $$(f_1,f_2,...,f_n)$$
-
-#### 损失函数
-损失函数采用的是和逻辑回归相同的函数，公式如下：
-### $$Loss(y,y^{hat}) = -y*logy^{hat}-(1-y)*log(1-y^{hat})$$
-
-## 2、Product Layer 详细解释
-前面说，product layer有两部分，$l_z$和$l_p$,其中这两部分都是由Embedding得到的。$l_z$是表示线性向量，因此我们直接由Embedding得到,z就是embedding层的复制。
-#### $$Z = (z_1,z_2,...,z_n) = (f_1,f_2,...,f_n)$$
-
-对于p来说，需要将Embedding映射成另一个向量
-$$p=\{ p_{ij}\} , i,j=1,2,...,n$$
-$$p_{i,j} = g(f_i,f_j)$$
-
-其中这个g函数就可以是不同的类型了。文中给出了两种函数，一种是Inner PNN，另一种是 Outer PNN 
-
-#### 2.1、IPNN
-先定义Embedding的大小为M，field的大小为N，而lz和lp的长度为D1。
-IPNN结构如下图所示：
-<img src='https://upload-images.jianshu.io/upload_images/4155986-efc8f371d4e694a4.png?imageMogr2/auto-orient/strip|imageView2/2/w/740/format/webp' style="height:50%;width:50%;"/>
-
-在IPNN模型中，g函数采用的就是内积来代表pij：
-$$g(f_i,f_j)=<f_i,f_j>$$
-
-从中我们可以看出，p是一个对称矩阵，因此W也可以是一个对称矩阵，就有如下分解：
-#### $$W_p^n = \theta^n\theta^{nT}$$
-因此：
-#### $$l_p^n = W_p^n.p =\sum_{i=1}^n\sum_{j=1}^n\theta^n\theta^{nT}<f_i,f_j>=<\sum_{i=1}^N \delta_i^n,\sum_{i=1}^N\delta_i^n> $$
-#### $$\delta_i^n=\theta^n_if_i$$
-因此：
-#### $$\delta^n = (\delta_1^n,\delta_2^n,...,\delta_n^n)$$
-从而得到：
-#### $$l_p=(||\sum_i\delta^1_i||,||\sum_i\delta^2_i||,...,||\sum_i\delta^{D1}_i||)$$
-
-#### 2.2、OPINN
-OPNN的示意图如下：
-<img src='https://upload-images.jianshu.io/upload_images/4155986-d9924e3ef896dc31.png?imageMogr2/auto-orient/strip|imageView2/2/w/756/format/webp' style="height:50%;width:50%;"/>
-
-在OPNN中，g函数的计算方式如下：
-$$p_{i,j}=g(f_i,f_j)=f_if_j^T$$
-这里的$p_{i,j}$是一个M* M的矩阵，由于计算Pi,j的复杂度是o(M* M),因此计算p的时间复杂度是 N* N*M *M,可以看出这个计算的代价很大。文中对此进行了优化，采用了叠加的方式，重新定义p
-矩阵
-$$p=\sum^N_{i=1}\sum^N_{j=1}f_if^T_j=f\sum(f\sum)^T ,f\sum = \sum^N_{i=1} f_i$$
-此时时间复杂度D1 * M *(M+N)
+这里就存在两种方式，一种是两者进行串联 ，另一种是进行并联。DeepFMM模型就是属于并行模型。
 
 
 
+## 2、DeepFM模型
+如下就是DeepFM的模型：
+<img src='https://upload-images.jianshu.io/upload_images/4155986-21fa429e42108e99.png?imageMogr2/auto-orient/strip|imageView2/2/w/535/format/webp' />
 
+DeepFM模型中包含两部分：DNN和因子分解机(FM)，这两者分别负责高阶特征组合和低阶特征组合。两者有相同的输入，DeepFM模型的公式如下：
+## $$y^{hat} =sigmoid(y_{FM}+y_{DNN})$$
 
+对于FM部分，是一个因子分解机，其输出公式如下：
+#### $$y_{FM}=\sum_i W_ix_i + \sum_{i=1}^d\sum_{j=1}^d<v_i,v_j>x_i*x_j$$
 
-
-
+对于深度模型部分，对于一般问题，直接将输入值输入到DNN中，但是CRT问题中绝大多数的输入都是稀疏矩阵，因此无法直接输入。因此在进入深度模型的过程中一般会进行Embedding层，将稀疏向量转化成Dense 向量，将高维的稀疏向量转化成低维的稠密向量
 

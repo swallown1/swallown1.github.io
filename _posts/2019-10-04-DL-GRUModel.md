@@ -22,23 +22,34 @@ LSTM是一种特殊的RNN网络，也是比较好的解决RNN所出现的梯度�
 LSTM的主要思想是‘细胞状态’，细胞状态其实指的就是上图中最上面的那一个类似于传送带的结构。通过细胞状态，可以使得信息可以在上面流传，实现可以学习到长间隔语句的信息。
 
 LSTM通过设计4个叫做‘门’的结构，对细胞状态中加入或减少信息。门就是通过sigmoid和pointwise乘法，选择性的让信息通过的方式。其中sigmoid输出的范围在0-1之间，表示的就是每部分通过的量。
+
 ![](https://img-blog.csdn.net/20170919125017539?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbHJlYWRlcmw=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+
 
 接下来开始介绍LSTM的四个步奏
 第一步就是遗忘门，如下图。遗忘门的主要作用就是就是用来决定从细胞状态中丢去什么信息。其输入是当前输入x和上一个细胞的状态$h_{t-1}$，通过sigmoid函数得到决定丢弃的信息。这一个步的函数表示为
+
 $$f_t = \sigma (W_f[h_{t-1},x_t]+b)$$
-![](https://images2015.cnblogs.com/blog/1042406/201703/1042406-20170308142107484-1893679132.png)
+
+
+![](https://upload-images.jianshu.io/upload_images/3426235-671c44df2719ee97.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+
 这一个步的函数表示为
 $$f_t = \sigma(W_f[h_{t-1},x_t]+b)$$
 
 第二步进行的就是输入门，如下图。输入门包括两部份组成,一部分是sigmoid函数，其输出的$i_t$决定着我们要更新的值，第二部分是tanh函数，这部分输出的结果$a_t$是一个新的候选值，并通过和$i_t$相乘决定将多少加入到细胞状态中。
+
 ![](https://upload-images.jianshu.io/upload_images/3426235-2a78bf02e451fa6b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
 
 这一个步的函数表示为
 $$i_t = \sigma(W_i[h_{t-1},x_t]+b)$$
 $$a_t = tanh(W_C[h_{t-1},x_t]+b)$$
 
 第三步就是更新细胞状态，将细胞状态从$C_{t-1}$更新到$C_t$状态。这一过程主要是两步，先与遗忘门的输出$f_t$相乘，目的是将就细胞状态中的一些内容进行遗忘。接着就是和 it * ~Ct进行相加，这是为了在细胞状态中加入通过输入门得出新的候选值向量，在细胞中更新新的信息。
+
+
 ![](https://upload-images.jianshu.io/upload_images/3426235-aca1efb0a7eb189e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 
@@ -47,6 +58,8 @@ $$a_t = tanh(W_C[h_{t-1},x_t]+b)$$
 $$C_t = f_t * C_{t-1} + i_t*a_t$$
 
 第四步就是确定输出了,也叫做输出门。这一步也通过细胞状态进行决定输出的内容。首先这里会先进性一个sigmoid函数，主要是选择出要输出的这一部分，然后就是通过一个tanh函数进行处理将细胞状态映射在-1-1的范围内，接着和sigmoid函数的输出相乘，得到要输出的那一部分内容。
+
+
  ![](https://upload-images.jianshu.io/upload_images/3426235-45af9b3908e1c3ad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 
@@ -68,6 +81,8 @@ $$h_t =o_t*tanh(C_{t})$$
 更新门是当$x_t$插入网络单元时，它乘以自己的权重W（z）。对于$h_（t-1）$也是一样，它保存了先前$t-1$个单位的信息，并乘以它自己的权重U（z）。将两个结果加在一起，然后应用S型激活函数将结果压缩在0和1之间。所以更新门可帮助模型确定需要将多少过去信息（来自先前的时间步长）传递给未来。这确实非常强大，因为该模型可以决定复制过去的所有信息，并消除了梯度问题消失的风险。
 
 下图是从大佬那里拿来的，感觉画的太好了，哈哈哈哈！
+
+
 ![](https://upload-images.jianshu.io/upload_images/3426235-15057ec61bcdd499.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 看到图中的更新门，可以得到公式如下：

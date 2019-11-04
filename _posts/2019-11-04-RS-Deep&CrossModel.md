@@ -101,7 +101,7 @@ $$p = \sigma \left( \left[ \mathbf { x } _ { L _ { 1 } } ^ { T } , \mathbf { h }
 
 对于二分类问题这里使用对数损失函数，进行损失计算，形式如下
 
-$$loss = - frac{1}{N} \sum^N_{i=1}y_i log(p_i)+(1-y_i)log(1-p_i)+\lambda \sum_l ||w_l||^2$$
+$$loss = - \frac{1}{N} \sum^N_{i=1}y_i log(p_i)+(1-y_i)log(1-p_i)+\lambda \sum_l ||w_l||^2$$
 
 ```
 # concat_part

@@ -70,7 +70,7 @@ wl,bl∈Rd是第l层layer的weight和bias参数。
 
 通过图示可以看出，交叉网络特殊的结构使得交叉特征程度随着层数深度的增加而增大。多项式的最高程度（就输入X0而言）为L层交叉网络L + 1。如果用Lc表示交叉层数，d表示输入维度。然后，参数的数量参与跨网络参数为：d Lc 2 (w和b).
 因为每一层的W和b都是d维度的。从上式可以发现，复杂度是输入维度d的线性函数。所以相比于deep network，cross network引入的复杂度微不足道。这样就保证了DCN的复杂度和DNN是一个级别的。论文中表示，Cross Network之所以能够高效的学习组合特征，就是因为x0 * xT的秩为1( rank-one 特性(两个向量的叉积))，使得我们不用计算并存储整个的矩阵就可以得到所有的cross terms
-```angular2html
+```
 # cross_part
 self._x0 = tf.reshape(self.x0, (-1, self.total_size, 1))
 x_l = self._x0
@@ -85,7 +85,7 @@ self.cross_network_out = tf.reshape(x_l, (-1, self.total_size))
 这部分就是通过MLP进行高阶特征的提取，进行一个全连接的前反馈神经网络，公式如下：
 $$h_{l+1}=f(W_1h_1+b_1)$$
 
-```angular2html
+```
 self.y_deep = tf.nn.dropout(self.x0,self.dropout_keep_deep[0])
 
 for i in range(0,len(self.deep_layers)):
@@ -101,7 +101,7 @@ $$p = \sigma \left( \left[ \mathbf { x } _ { L _ { 1 } } ^ { T } , \mathbf { h }
 
 对于二分类问题这里使用对数损失函数，进行损失计算，形式如下
 
-$$loss = - 1\over N \sum^N_{i=1}y_i log(p_i)+(1-y_i)log(1-p_i)+\lambda \sum_l ||w_l||^2$$
+$$loss = - frac{1}{N} \sum^N_{i=1}y_i log(p_i)+(1-y_i)log(1-p_i)+\lambda \sum_l ||w_l||^2$$
 
 ```
 # concat_part

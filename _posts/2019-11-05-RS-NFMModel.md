@@ -128,9 +128,8 @@ self.out = tf.add_n([tf.reduce_sum(self.y_first_order,axis=1,keep_dims=True),
 
 
 ### References:
-1、[推荐系统遇上深度学习(五)--Deep&Cross Network模型理](https://www.jianshu.com/p/77719fc252fa)
+1、[推荐系统遇上深度学习(七)--NFM模型理论和实践](https://www.jianshu.com/p/4e65723ee632)
 
-2、[推荐系统CTR实战——Deep & Cross](https://fuhailin.github.io/Deep-and-Cross-Network/)
+2、[（读论文）推荐系统之ctr预估-NFM模型解析](https://jesse-csj.github.io/2019/07/29/NFM/)
 
-3、[论文](https://arxiv.org/abs/1708.05123)
 

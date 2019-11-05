@@ -2,7 +2,7 @@
 layout: post
 title:  "推荐系统之-PNN模型"
 date:   2019-09-28 18:51:24
-categories: 推荐系统
+categories: 推荐系统 深度学习
 tags: 推荐系统  PNN
 excerpt: 记录看过的一些paper
 ---

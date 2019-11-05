@@ -2,7 +2,7 @@
 layout: post
 title:  "推荐系统之-DeepFM模型"
 date:   2019-09-30 10:31:16
-categories: 推荐系统
+categories: 推荐系统 深度学习
 tags: 推荐系统  DeepFM
 excerpt: 记录看过的一些paper
 ---

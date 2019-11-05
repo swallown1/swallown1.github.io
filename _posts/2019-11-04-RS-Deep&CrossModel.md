@@ -2,7 +2,7 @@
 layout: post
 title:  "推荐系统之-Deep&Cross模型"
 date:   2019-11-04 13:28:45
-categories: 推荐系统
+categories: 推荐系统 深度学习
 tags: 推荐系统  Deep&Cross
 excerpt: Deep & Cross Network(DCN)[1]是来自于 2017 年 google 和 Stanford 共同完成的一篇工作
 ---
